@@ -1,0 +1,16 @@
+ python3 cli.py \
+--method ipet \
+--pattern_ids 0 1 2 3 \
+--data_dir datasets/rte-data \
+--model_type roberta \
+--model_name_or_path roberta-large \
+--task_name rte \
+--output_dir outputs/rte-output \
+--do_train \
+--do_eval \
+--pet_per_gpu_train_batch_size 2 \
+--pet_gradient_accumulation_steps 8 \
+--pet_max_steps 250 \
+--sc_per_gpu_unlabeled_batch_size 2 \
+--sc_gradient_accumulation_steps 8 \
+--sc_max_steps 5000

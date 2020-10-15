@@ -15,6 +15,8 @@ This file contains basic logging logic.
 """
 import logging
 
+logging.basicConfig(filename='app.log',level=logging.DEBUG)
+
 names = set()
 
 

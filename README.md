@@ -89,7 +89,20 @@ PET的迭代变体（iPET）可以训练多代模型，甚至可以在没有任�
 	--output_dir $OUTPUT_DIR \
 	--do_train \
 	--do_eval
-    
+
+Example
+```buildoutcfg
+--method pet \
+--pattern_ids 0 \
+--data_dir datasets/SuperGLUE/RTE \
+--model_type roberta \
+--model_name_or_path roberta-large \
+--task_name  rte \
+--output_dir outputs \
+--do_train \
+--do_eval
+```
+ 
  其中 
  - `$PATTERN_IDS` 指定要使用的PVP。例如，如果要使用 *all* pattern，则为AG's News and Yahoo Questions指定`PATTERN_IDS 0 1 2 3 4`，为 Yelp Reviews and MNLI指定`PATTERN_IDS 0 1 2 3`。
  - `$DATA_DIR`  是包含训练和测试文件的目录（检查tasks.py以查看如何为每个任务命名和格式化这些文件）。
