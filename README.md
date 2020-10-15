@@ -1,6 +1,8 @@
 # Pattern-Exploiting Training (PET)
-
-This repository contains the code for [Exploiting Cloze Questions for Few-Shot Text Classification and Natural Language Inference](https://arxiv.org/abs/2001.07676) and [It's Not Just Size That Matters: Small Language Models Are Also Few-Shot Learners](https://arxiv.org/abs/2009.07118). The papers introduce pattern-exploiting training (PET), a semi-supervised training procedure that reformulates input examples as cloze-style phrases. In low-resource settings, PET and iPET significantly outperform regular supervised training, various semi-supervised baselines and even GPT-3 despite requiring 99.9% less parameters. The iterative variant of PET (iPET) trains multiple generations of models and can even be used without any training data.
+该repository包含代码for [Exploiting Cloze Questions for Few-Shot Text Classification and Natural Language Inference](https://arxiv.org/abs/2001.07676) and [It's Not Just Size That Matters: Small Language Models Are Also Few-Shot Learners](https://arxiv.org/abs/2009.07118)
+论文介绍了pattern-exploiting training（PET），这是一种半监督训练程序，
+将输入示例重新编写为填空样式短语。在低资源环境中，尽管参数比GPT-3少99.9％，但PET和iPET明显优于常规监督训练，各种半监督基线甚至GPT-3。 
+PET的迭代变体（iPET）可以训练多代模型，甚至可以在没有任何训练数据的情况下使用。
 
 <table>
     <tr>
@@ -66,15 +68,16 @@ This repository contains the code for [Exploiting Cloze Questions for Few-Shot T
 
 ## 🔧 Setup
 
-All requirements for PET can be found in `requirements.txt`. You can install all required packages with `pip install -r requirements.txt`.
+有关PET的所有requirements都可以在“requirements.txt”中找到。您可以使用`pip install -r requirements.txt`安装所有必需的软件包。
 
 ## 💬 CLI Usage
 
-The command line interface `cli.py` in this repository currently supports three different training modes (PET, iPET, supervised training), two additional evaluation methods (unsupervised and priming) and 13 different tasks. For Yelp Reviews, AG's News, Yahoo Questions, MNLI and X-Stance, see [the original paper](https://arxiv.org/abs/2001.07676) for further details. For the 8 SuperGLUE tasks, see [this paper](https://arxiv.org/abs/2009.07118).
+该存储库中的命令行界面cli.py当前支持三种不同的训练pattern（PET，iPET，有监督的训练），两种其他评估方法（无监督和priming）以及13种不同的任务。
+有关Yelp Reviews，AG's News，Yahoo Questions，MNLI和X-Stance，请参阅https://arxiv.org/abs/2001.07676以获取更多详细信息。
+有关8个SuperGLUE任务，请参见https://arxiv.org/abs/2009.07118。
 
 ### PET Training and Evaluation
-
-To train and evaluate a PET model for one of the supported tasks, simply run the following command:
+训练和评估PET模型, 需运行以下命令：
 
     python3 cli.py \
 	--method pet \
@@ -87,15 +90,16 @@ To train and evaluate a PET model for one of the supported tasks, simply run the
 	--do_train \
 	--do_eval
     
- where
- - `$PATTERN_IDS` specifies the PVPs to use. For example, if you want to use *all* patterns, specify `PATTERN_IDS 0 1 2 3 4` for AG's News and Yahoo Questions or `PATTERN_IDS 0 1 2 3` for Yelp Reviews and MNLI.
- - `$DATA_DIR` is the directory containing the train and test files (check `tasks.py` to see how these files should be named and formatted for each task).
- - `$MODEL_TYPE` is the name of the model being used, e.g. `albert`, `bert` or `roberta`.
- - `$MODEL_NAME` is the name of a pretrained model (e.g., `roberta-large` or `albert-xxlarge-v2`) or the path to a pretrained model.
- - `$TASK_NAME` is the name of the task to train and evaluate on.
- - `$OUTPUT_DIR` is the name of the directory in which the trained model and evaluation results are saved.
+ 其中 
+ - `$PATTERN_IDS` 指定要使用的PVP。例如，如果要使用 *all* pattern，则为AG's News and Yahoo Questions指定`PATTERN_IDS 0 1 2 3 4`，为 Yelp Reviews and MNLI指定`PATTERN_IDS 0 1 2 3`。
+ - `$DATA_DIR`  是包含训练和测试文件的目录（检查tasks.py以查看如何为每个任务命名和格式化这些文件）。
+ - `$MODEL_TYPE`  是所使用模型的名称，例如`albert`，`bert`或`roberta`。
+ - `$MODEL_NAME` 是预训练模型的名称（例如， `roberta-large` or `albert-xxlarge-v2`）或预训练模型的路径。
+ - `$TASK_NAME`   是要进行训练和评估的任务的名称。
+ - `$OUTPUT_DIR`  是保存经过训练的模型和评估结果的目录的名称。
  
-You can additionally specify various training parameters for both the ensemble of PET models corresponding to individual PVPs (prefix `--pet_`) and for the final sequence classification model (prefix `--sc_`). For example, the default parameters used for our SuperGLUE evaluation are:
+您还可以为对应于各个PVP的PET模型集合（前缀`--pet_`）和最终序列分类模型（前缀`--sc_`）指定各种训练参数。
+例如，用于我们的SuperGLUE评估的默认参数为：
  
  	--pet_per_gpu_eval_batch_size 8 \
 	--pet_per_gpu_train_batch_size 2 \
@@ -110,70 +114,81 @@ You can additionally specify various training parameters for both the ensemble o
 	--sc_max_seq_length 256 \
     --sc_repetitions 1
     
-For each pattern `$P` and repetition `$I`, running the above command creates a directory `$OUTPUT_DIR/p$P-i$I` that contains the following files:
-  - `pytorch_model.bin`: the finetuned model, possibly along with some model-specific files (e.g, `spiece.model`, `special_tokens_map.json`)
-  - `wrapper_config.json`: the configuration of the model being used
-  - `train_config.json`: the configuration used for training
-  - `eval_config.json`: the configuration used for evaluation
-  - `logits.txt`: the model's predictions on the unlabeled data
-  - `eval_logits.txt`: the model's prediction on the evaluation data
-  - `results.json`: a json file containing results such as the model's final accuracy
-  - `predictions.jsonl`: a prediction file for the evaluation set in the SuperGlue format
+对于每个pattern `$P`和repetition `$I`，运行上面的命令将创建一个目录`$OUTPUT_DIR/p$P-i$I`，其中包含以下文件：
+  - `pytorch_model.bin`: 经过微调的模型，可能还会包含一些特定于模型的文件(e.g, `spiece.model`, `special_tokens_map.json`)
+  - `wrapper_config.json`: 正在使用的模型的配置
+  - `train_config.json`: 用于训练的配置
+  - `eval_config.json`: 用于评估的配置
+  - `logits.txt`: 模型对无标签数据的预测
+  - `eval_logits.txt`: 模型对评估数据的预测
+  - `results.json`: ：一个包含结果的json文件，例如模型的最终精度
+  - `predictions.jsonl`: SuperGlue格式的评估集的预测文件
   
-The final (distilled) model for each repetition `$I` can be found in `$OUTPUT_DIR/final/p0-i$I`, which contains the same files as described above.
+每次epetition `$I` 的最终（蒸馏）模型可以在`$OUTPUT_DIR/final/p0-i$I`中找到，该模型包含与上述相同的文件。
 
-🚨 If your GPU runs out of memory during training, you can try decreasing both the `pet_per_gpu_train_batch_size` and the `sc_per_gpu_unlabeled_batch_size` while increasing both `pet_gradient_accumulation_steps` and `sc_gradient_accumulation_steps`.
+🚨 如果您的GPU在训练期间内存不足，则可以尝试同时减 `pet_per_gpu_train_batch_size` and the `sc_per_gpu_unlabeled_batch_size`
+ , 同时增加 `pet_gradient_accumulation_steps` and `sc_gradient_accumulation_steps`.
 
 
 ### iPET Training and Evaluation
 
-To train and evaluate an iPET model for one of the supported tasks, simply run the same command as above, but replace `--method pet` with `--method ipet`. There are various additional iPET parameters that you can modify; all of them are prefixed with `--ipet_`.
+要为其中一个任务训练和评估iPET模型，只需运行与上述相同的命令，
+然后将`--method pet` 替换为`--method ipet`即可。您可以修改各种其他的iPET参数。它们都以`--ipet_`为前缀。
 
-For each generation `$G`, pattern `$P` and iteration `$I`, this creates a directory `$OUTPUT_DIR/g$G/p$P-i$I` that is structured as for regular PET. The final (distilled) model can again be found in `$OUTPUT_DIR/final/p0-i$I`.
+对于generation `$G`，pattern `$P` and iteration `$I`，
+这将创建目录`$OUTPUT_DIR/g$G/p$P-i$I` ，其结构与常规PET相同。最终（提取的）模型可以再次在`$OUTPUT_DIR/final/p0-i$I`.中找到。
 
-🚨 If you use iPET with zero training examples, you need to specify how many examples for each label should be chosen in the first generation and you need to change the reduction strategy to mean: `--ipet_n_most_likely 100 --reduction mean`.
+🚨如果将iPET与zero个训练示例一起使用，则需要指定在第一generation中应为每个标签选择多少个示例，
+并且需要将减少策略更改为：`--ipet_n_most_likely 100 --reduction mean`.
 
 ### Supervised Training and Evaluation
 
-To train and evaluate a regular sequence classifier in a supervised fashion, simply run the same command as above, but replace `--method pet` with `--method sequence_classifier`. There are various additional parameters for the sequence classifier that you can modify; all of them are prefixed with `--sc_`.
+要以监督的方式训练和评估常规序列分类器，只需运行与上述相同的命令，
+但是将`--method pet` 替换为`--method sequence_classifier`即可。您可以修改序列分类器的各种其他参数。它们都以`--sc_`为前缀。
 
 ### Unsupervised Evaluation
 
-To evaluate a pretrained language model with the default PET patterns and verbalizers, but without fine-tuning, remove the argument `--do_train` and add `--no_distillation` so that no final distillation is performed.
+要使用默认的PET pattern和verbalizers 评估经过预训练的语言模型，但无需进行微调，
+请删除参数`--do_train`并添加`--no_distillation`，以便不执行最终的蒸馏。
 
 ### Priming
 
-If you want to use priming, remove the argument `--do_train` and add the arguments `--priming --no_distillation` so that all training examples are used for priming and no final distillation is performed. 
+如果要使用priming，请删除参数 `--do_train` 并添加参数 `--priming --no_distillation`，以便所有训练样本均用于priming，并且不执行最终蒸馏。
 
-🚨 Remember that you may need to increase the maximum sequence length to a much larger value, e.g. `--pet_max_seq_length 5000`. This only works with language models that support such long sequences, e.g. XLNet. For using XLNet, you can specify `--model_type xlnet --model_name_or_path xlnet-large-cased --wrapper_type plm`.
+🚨请记住，您可能需要将最大序列长度增加到更大的值，例如`--pet_max_seq_length 5000`。
+这仅适用于支持此类长序列的语言模型，例如XLNet。为了使用XLNet，您可以指定`--model_type xlnet --model_name_or_path xlnet-large-cased --wrapper_type plm`。
 
 ## 💻 API Usage
 
-Instead of using the command line interface, you can also directly use the PET API, most of which is defined in `pet.modeling`. By including `import pet`, you can access methods such as `train_pet`, `train_ipet` and `train_classifier`. Check out their documentation for more information.
+除了使用命令行界面之外，您还可以直接使用PET API，其中大多数在`pet.modeling`中定义。
+通过包含`import pet`，您可以访问诸如`train_pet`, `train_ipet` and `train_classifier`.之类的方法。查看他们的文档以获取更多信息。
 
 ## 🐶 Train your own PET
 
-To use PET for custom tasks, you need to define two things: 
+要将PET用于自定义任务，您需要定义两件事：
 
-- a **DataProcessor**, responsible for loading training and test data. See `examples/custom_task_processor.py` for an example.
-- a **PVP**, responsible for applying patterns to inputs and mapping labels to natural language verbalizations. See `examples/custom_task_pvp.py` for an example.
+- a **DataProcessor**, 负责加载训练和测试数. See `examples/custom_task_processor.py` for an example.
+- a **PVP**, 负责将pattern应用到输入并将标签映射到自然语言verbalizations. See `examples/custom_task_pvp.py` for an example.
 
-After having implemented the DataProcessor and the PVP, you can train a PET model using the command line as [described above](#pet-training-and-evaluation). Below, you can find additional information on how to define the two components of a PVP, *verbalizers* and *patterns*.
+在实现了DataProcessor和PVP之后，您可以如上所述使用命令行来训练PET模型[described above](#pet-training-and-evaluation)）。
+在下面，您可以找到有关如何定义PVP的两个组件*verbalizers* and *patterns*的其他信息。
 
 ### Verbalizers
 
-Verbalizers are used to map task labels to words in natural language. For example, in a binary sentiment classification task, you could map the positive label (`+1`) to the word `good` and the negative label (`-1`) to the word `bad`. Verbalizers are realized through a PVP's `verbalize()` method. The simplest way of defining a verbalizer is to use a dictionary:
-
+Verbalizers用于将任务标签映射到自然语言的单词。
+例如，在二进制情感分类任务中，您可以将正标签（+1）映射到单词`good`，将负标签（-1）映射到`bad`。
+Verbalizers是通过PVP的`verbalize()`方法实现的。定义verbalizer的最简单方法是使用字典：
 ```python
 VERBALIZER = {"+1": ["good"], "-1": ["bad"]}
     
 def verbalize(self, label) -> List[str]:
     return self.VERBALIZER[label]       
 ```
+重要的是，在PET的当前版本中，默认情况下，verbalizers仅限于基础LM单词表中的 **single tokens** （要使用多个token，[see below](#pet-with-multiple-masks))。
+给定语言模型的tokenizer，您可以通过验证`len(tokenizer.tokenize(word)) == 1`.来轻松检查单词是否与单个标签相对应。
 
-Importantly, in PET's current version, verbalizers are by default restricted to **single tokens** in the underlying LMs vocabulary (for using more than one token, [see below](#pet-with-multiple-masks)). Given a language model's tokenizer, you can easily check whether a word corresponds to a single token by verifying that `len(tokenizer.tokenize(word)) == 1`.
-
-You can also define multiple verbalizations for a single label. For example, if you are unsure which words best represent the labels in a binary sentiment classification task, you could define your verbalizer as follows:
+您还可以为单个标签定义多个verbalizations。
+例如，如果您不确定哪个词最能代表二进制情感分类任务中的标签，则可以按以下方式定义verbalizer：
 
 ```python
 VERBALIZER = {"+1": ["great", "good", "wonderful", "perfect"], "-1": ["bad", "terrible", "horrible"]}
@@ -181,21 +196,24 @@ VERBALIZER = {"+1": ["great", "good", "wonderful", "perfect"], "-1": ["bad", "te
 
 ### Patterns
 
-Patterns are used to make the language model understand a given task; they must contain exactly one `<MASK>` token which is to be filled using the verbalizer. For binary sentiment classification based on a review's summary (`<A>`) and body (`<B>`), a suitable pattern may be `<A>. <B>. Overall, it was <MASK>.` Patterns are realized through a PVP's `get_parts()` method, which returns a pair of text sequences (where each sequence is represented by a list of strings):
+pattern用于使语言模型理解给定的任务。
+它们必须只包含一个`<MASK>` token，该token将使用verbalizer填充。
+对于基于评论摘要（`<A>`）和正文（`<B>`）的二进制情感分类，
+合适的pattern可以是`<A>. <B>`。总的来说，它是<MASK>。
+pattern是通过PVP的`get_parts()`方法实现的，该方法返回一对文本序列（每个序列由字符串列表表示）：
 
 ```python
 def get_parts(self, example: InputExample):
     return [example.text_a, '.', example.text_b, '.'], ['Overall, it was ', self.mask]
 ```
-
-If you do not want to use a pair of sequences, you can simply leave the second sequence empty:
+如果您不想使用一对序列，则只需将第二个序列留空：
 
 ```python
 def get_parts(self, example: InputExample):
     return [example.text_a, '.', example.text_b, '. Overall, it was ', self.mask], []
 ```
-            
-If you want to define several patterns, simply use the `PVP`s `pattern_id` attribute:
+
+如果要定义几种pattern，只需使用PVP的pattern_id属性：            
 
 ```python
 def get_parts(self, example: InputExample):
@@ -205,9 +223,11 @@ def get_parts(self, example: InputExample):
         return ['It was just ', self.mask, '!', example.text_a, '.', example.text_b, '.'], []
 ```
 
-When training the model using the command line, specify all patterns to be used (e.g., `--pattern_ids 1 2`).
+使用命令行训练模型时，请指定要使用的所有pattern（例如，`--pattern_ids 1 2`).
 
-Importantly, if a sequence is longer than the specified maximum sequence length of the underlying LM, PET must know which parts of the input can be shortened and which ones cannot (for example, the mask token must always be there). Therefore, `PVP` provides a `shortenable()` method to indicate that a piece of text can be shortened:
+重要的是，如果序列长于基础LM的指定最大序列长度，
+则PET必须知道输入的哪些部分可以缩短而哪些部分不能缩短（例如，mask token必须始终存在）。
+因此，PVP提供了`shortenable()` 方法来指示可以缩短一段文本：
 
 ```python
 def get_parts(self, example: InputExample):
@@ -218,7 +238,11 @@ def get_parts(self, example: InputExample):
 
 ### PET with Multiple Masks
 
-By default, the current implementation of PET and iPET only supports a fixed set of labels that is shared across all examples and verbalizers that correspond to a single token. If you want to use verbalizers that correspond to multiple tokens ([as described here](http://arxiv.org/abs/2009.07118)), you need to define a custom `TaskHelper` and add it to the `TASK_HELPERS` dictionary in `pet/tasks.py`. As a starting point, you can check out the classes `CopaTaskHelper`, `WscTaskHelper` and `RecordTaskHelper` in `pet/task_helpers.py`. In the next release of PET, using verbalizers with multiple masks will be enabled by default.
+默认情况下，PET和iPET的当前实现仅支持一组固定的标签，该标签在与单个token相对应的所有样本和verbalizers之间共享。
+如果要使用对应于多个token的verbalizers, 如此处所述, http://arxiv.org/abs/2009.07118，
+则需要定义一个自定义`TaskHelper`并将其添加到`TASK_HELPERS`字典中在`pet / tasks.py`中。
+首先，您可以在`pet/task_helpers.py`中检出`CopaTaskHelper`, `WscTaskHelper` and `RecordTaskHelper` 类。
+在下一版的PET中，默认情况下将启用带有多个masks的verbalizers。
 
 ## 📕 Citation
 
