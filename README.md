@@ -73,8 +73,8 @@ PET的迭代变体（iPET）可以训练多代模型，甚至可以在没有任�
 ## 💬 CLI Usage
 
 该存储库中的命令行界面cli.py当前支持三种不同的训练pattern（PET，iPET，有监督的训练），两种其他评估方法（无监督和priming）以及13种不同的任务。
-有关Yelp Reviews，AG's News，Yahoo Questions，MNLI和X-Stance，请参阅https://arxiv.org/abs/2001.07676以获取更多详细信息。
-有关8个SuperGLUE任务，请参见https://arxiv.org/abs/2009.07118。
+有关Yelp Reviews，AG's News，Yahoo Questions，MNLI和X-Stance，请参阅https://arxiv.org/abs/2001.07676 以获取更多详细信息。
+有关8个SuperGLUE任务，请参见https://arxiv.org/abs/2009.07118
 
 ### PET Training and Evaluation
 训练和评估PET模型, 需运行以下命令：
